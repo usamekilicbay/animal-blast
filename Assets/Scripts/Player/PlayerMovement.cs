@@ -1,5 +1,7 @@
 using Managers;
+using System;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Player
 {
@@ -11,6 +13,7 @@ namespace Player
         private Camera _camera;
         private Vector3 _cameraPos;
         private static Vector3 StartPos;
+        private int _direction;
 
         #region Unity
 
@@ -29,16 +32,34 @@ namespace Player
             GameManager.ResetAction -= ResetPosition;
         }
 
-        private void OnMouseDown()
+        private void Update()
         {
-            if (GameManager.GameState != GameState.GAME)
-                GameManager.GameState = GameState.GAME;
+            if (Input.GetMouseButtonUp(0) || IsReachedToBorder())
+                _direction *= -1;
+
+            if (GameManager.GameState == GameState.GAME)
+                MovePlayer();
+
+            if (Input.GetMouseButtonDown(0))
+                if (GameManager.GameState == GameState.READY)
+                    GameManager.GameState = GameState.START;
         }
 
-        private void OnMouseDrag()
+        private bool IsReachedToBorder()
         {
-            if (GameManager.GameState == GameState.GAME)
-                DragPlayer();
+            return transform.position.x <= CameraManager.ViewPointBorderLeft + 1f
+                || transform.position.x >= CameraManager.ViewPointBorderRight - 1f;
+        }
+
+        //private void OnMouseDrag()
+        //{
+        //    if (GameManager.GameState == GameState.GAME)
+        //        DragPlayer();
+        //}
+
+        private void MovePlayer()
+        {
+            transform.position += _direction * movementSpeed * Time.deltaTime * Vector3.right;
         }
 
         #endregion
@@ -50,6 +71,8 @@ namespace Player
             StartPos = transform.position;
             _camera = Camera.main;
             _cameraPos = _camera.transform.position;
+            _direction = Random.Range(0f, 1f) < 0.5f
+                ? -1 : 1;
         }
 
         #endregion

@@ -1,5 +1,6 @@
 using Configs;
 using Enemy;
+using EZCameraShake;
 using Helper;
 using Managers;
 using Player.Shooting;
@@ -19,6 +20,7 @@ namespace Projectile
         private void OnEnable()
         {
             rb.AddForce(ProjectileConfig.ProjectileSpeed * Vector2.up);
+            CameraShaker.Instance.ShakeOnce(5f, 0f, 0f, 0.5f);
         }
 
         private void OnDisable()
@@ -41,9 +43,8 @@ namespace Projectile
 
             if (canDamage)
             {
-                //CameraManager.ShakeCameraAction?.Invoke();
                 EnemySpawner.HurtEnemyAction?.Invoke(ProjectileConfig.Damage);
-                ParticleManager.SpawnParticleAction?.Invoke(ParticleType.ENEMY_HURT, transform.position);
+                ParticleManager.SpawnParticleAction?.Invoke(ParticleType.ENEMY_HURT, collision.gameObject.transform.position);
                 ScoreManager.ScoreAction?.Invoke(Shooter.CurrentDamage);
                 BulletPool.FeedPoolAction?.Invoke(gameObject);
             }

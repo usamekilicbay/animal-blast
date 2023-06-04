@@ -22,19 +22,22 @@ namespace Enemy
             Initial();
         }
 
-
         private void OnCollisionEnter2D(Collision2D collision)
         {
             var layer = collision.gameObject.layer;
 
             if (layer == (int)Layer.BORDER)
-            {
                 BounceFromWall();
-            }
             else if (layer == (int)Layer.FLOOR)
-            {
                 BounceFromGround();
-            }
+        }
+
+        private void OnTriggerEnter2D(Collider2D collision)
+        {
+            var layer = collision.gameObject.layer;
+
+            if (layer == (int)Layer.PROJECTILE)
+                Jump();
         }
 
         #endregion
@@ -94,6 +97,11 @@ namespace Enemy
                 _rb.AddForce(Vector2.right * 150f);
 
             _rb.AddTorque(posX * 1.2f);
+        }
+
+        private void Jump()
+        {
+            _rb.AddForce(Vector2.up * 1500f);
         }
     }
 }

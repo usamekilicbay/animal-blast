@@ -1,13 +1,14 @@
+using Enemy;
 using System;
 using UnityEngine;
-using static Helper.Constant;
 
 public enum GameState
 {
     READY,
+    START,
     GAME,
     GAMEOVER,
-    PAUSE
+    PAUSE,
 }
 
 namespace Managers
@@ -31,13 +32,17 @@ namespace Managers
                 {
                     case GameState.READY:
                         break;
+                    case GameState.START:
+                        StartGame();
+                        break;
                     case GameState.GAME:
-                        Time.timeScale = 1;
+                        Time.timeScale = 1f;
                         break;
                     case GameState.GAMEOVER:
+                        GameOver();
                         break;
                     case GameState.PAUSE:
-                        Time.timeScale = 0;
+                        Pause();
                         break;
                     default:
                         break;
@@ -58,24 +63,15 @@ namespace Managers
             UIManager.UpdateShownPanelAction(PanelType.GAME);
         }
 
-        private void Update()
+        private static void StartGame()
         {
-            switch (GameState)
-            {
-                case GameState.READY:
-                    break;
-                case GameState.GAME:
-                    Time.timeScale = 1;
-                    break;
-                case GameState.GAMEOVER:
-                    GameOver();
-                    break;
-                case GameState.PAUSE:
-                    Time.timeScale = 0;
-                    break;
-                default:
-                    break;
-            }
+            EnemySpawner.SpawnEnemyAction();
+            GameState = GameState.GAME;
+        }
+
+        private static void Pause()
+        {
+            Time.timeScale = 0f;
         }
 
         private static void GameOver()

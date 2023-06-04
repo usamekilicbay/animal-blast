@@ -1,5 +1,6 @@
 using Configs;
 using DG.Tweening;
+using EZCameraShake;
 using Managers;
 using Player.Shooting;
 using System;
@@ -25,6 +26,7 @@ namespace Enemy
         private static int _KilledEnemyCount;
 
         public static Action<float> HurtEnemyAction { get; private set; }
+        public static Action SpawnEnemyAction { get; private set; }
 
         #region Unity
 
@@ -33,22 +35,19 @@ namespace Enemy
             _KilledEnemyCount = PlayerPrefs.GetInt(PlayerPrefsKey.KilledEnemyCount);
         }
 
-        private void Start()
-        {
-            SpawnEnemy();
-        }
-
         private void OnEnable()
         {
             GameManager.GameOverAction += ResetEnemy;
-            GameManager.ResetAction += SpawnEnemy;
+            //GameManager.ResetAction += SpawnEnemy;
+            SpawnEnemyAction += SpawnEnemy;
             HurtEnemyAction += Hurt;
         }
 
         private void OnDisable()
         {
             GameManager.GameOverAction -= ResetEnemy;
-            GameManager.ResetAction -= SpawnEnemy;
+            //GameManager.ResetAction -= SpawnEnemy;
+            SpawnEnemyAction -= SpawnEnemy;
             HurtEnemyAction -= Hurt;
         }
 
@@ -76,7 +75,8 @@ namespace Enemy
             _getHurtTween.Kill();
             ParticleManager.SpawnParticleAction?.Invoke(ParticleType.ENEMY_DEATH, _Enemy.transform.position);
             SfxManager.PlaySfxAction?.Invoke(SfxType.SHOOTING);
-            CameraManager.ShakeCameraAction?.Invoke();
+            CameraShaker.Instance.ShakeOnce(50f, 0f, 0.1f, 2f);
+            //CameraManager.ShakeCameraAction?.Invoke(0.5f, 0.5f, 0.2f);
             ScoreManager.ScoreAction?.Invoke(_EnemyConfig.KillPoint);
             _KilledEnemyCount++;
             Shooter.UpdateDamageAction?.Invoke(_KilledEnemyCount);
